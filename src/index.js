@@ -15,8 +15,8 @@ search.addEventListener('input', debounced);
 
 function onSearch(e) {
     e.preventDefault();
-
-    searchCountryAPI(search.value.trim())   //чому не ігноруються пробіли?
+    const searchCountry = e.target.value.trim();
+    searchCountryAPI(searchCountry)   
         .then(data => {
             if (data.length > 10) {
                 Notiflix.Notify.info(`Too many matches found. Please enter a more specific name.`);
@@ -33,7 +33,11 @@ function onSearch(e) {
                 countryInfo.innerHTML = '';
             }
         })
-        .catch(err=>console.log(err))
+        .catch(() => {
+            Notiflix.Notify.failure(`Oops, there is no country with that name`);
+            countryInfo.innerHTML = '';
+            list.innerHTML = '';
+    });
 }
 
 
@@ -44,9 +48,6 @@ function searchCountryAPI(name) {
     return fetch(`${BASE_URL}${name}?fields=name,capital,flags,population,languages`, options)
         .then(resp => {
             if (!resp.ok) {
-                Notiflix.Notify.failure(`Oops, there is no country with that name`);
-                countryInfo.innerHTML = '';
-                list.innerHTML = '';
                 throw new Error(resp.statusText);
             }
             return resp.json()
@@ -77,6 +78,8 @@ function createMarkup(arr) {
         <h2 class="country--info--text">${name.official}</h2></div>
         <h3>Capital: <span>${capital}</span></h3>
         <h3>Population: <span>${population}</span></h3>
-        <h3>Languages: <span>${languages.value}</span></h3>` //як дістати список?
+        <h3>Languages: <span>${Object.values(
+                              languages
+                            )}</span></h3>` 
     ).join('')
 };

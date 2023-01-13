@@ -15,8 +15,8 @@ search.addEventListener('input', debounced);
 
 function onSearch(e) {
     e.preventDefault();
-    const searchCountry = e.target.value.trim();
-    searchCountryAPI(searchCountry)   
+    if (e.target.value.trim() === '') { return };
+    searchCountryAPI(e.target.value.trim())   
         .then(data => {
             if (data.length > 10) {
                 Notiflix.Notify.info(`Too many matches found. Please enter a more specific name.`);
